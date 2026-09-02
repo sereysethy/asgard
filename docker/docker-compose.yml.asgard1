@@ -1,0 +1,35 @@
+services:
+  asgard:
+    restart: always
+    build:
+      context: ..
+      dockerfile: ${DOCKERFILE}
+      args:
+        COWRIE_SRC: ${COWRIE_SRC}
+        COWRIE_USER_ID: ${COWRIE_USER_ID}
+        COWRIE_GROUP_ID: ${COWRIE_GROUP_ID}
+        DOCKER_GROUP_ID: ${DOCKER_GROUP_ID}
+    image: ${ASGARD_IMAGE}
+    container_name: asgard
+    user: ${COWRIE_USER}
+    group_add: 
+      - ${DOCKER_GROUP_ID}
+    ports:
+      - "2222:2222"
+      - "2223:2223"
+    volumes:
+      - ./data/cowrie-etc:/cowrie/cowrie-git/etc
+      - ./data/cowrie-var:/cowrie/cowrie-git/var
+      - /var/run/docker.sock:/var/run/docker.sock
+  
+  target:
+    image: ${TARGET_HONEYPOT_IMAGE}
+    hostname: ${TARGET_HONEYPOT_HOSTNAME}
+    container_name: ${TARGET_HOENYPOT_CONTAINER_NAME}
+    volumes:
+      - ./data/local_home:/home
+
+networks:
+  default:
+    external: true
+    name: ${DOCKER_NETWORK_NAME}

@@ -1,0 +1,108 @@
+# SPDX-FileCopyrightText: 2021-2026 Michel Oosterhof <michel@oosterhof.net>
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
+# This Dockerfile contains two images, `builder` and `runtime`.
+# `builder` contains all necessary code to build
+# `runtime` is stripped down.
+
+FROM debian:bookworm-slim AS builder
+
+WORKDIR /
+
+ENV COWRIE_GROUP=cowrie \
+    COWRIE_USER=cowrie \
+    COWRIE_HOME=/cowrie
+
+ARG COWRIE_SRC
+
+ARG COWRIE_USER_ID
+ARG COWRIE_GROUP_ID
+ARG DOCKER_GROUP_ID
+
+# Set locale to UTF-8, otherwise upstream libraries have bytes/string conversion issues
+ENV LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8
+
+
+# Create cowrie user and group with specified IDs, and add to docker group 
+# if DOCKER_GROUP_ID is not 0. This allows the container to run with the same 
+# UID/GID as the host user, which can help avoid permission issues when mounting volumes.
+RUN if [ "$DOCKER_GROUP_ID" != "0" ]; then \
+      echo "Creating docker group with GID ${DOCKER_GROUP_ID} and adding cowrie user to it"; \
+      groupadd -r -g ${DOCKER_GROUP_ID} docker && \
+      groupadd -r -g ${COWRIE_GROUP_ID} ${COWRIE_GROUP} && \
+      useradd -r -u ${COWRIE_USER_ID} -d ${COWRIE_HOME} -m -g ${COWRIE_GROUP} -G docker ${COWRIE_USER}; \
+    else \
+      echo "Creating cowrie group with GID ${COWRIE_GROUP_ID} and adding cowrie user to it"; \
+      groupadd -r -g ${COWRIE_GROUP_ID} ${COWRIE_GROUP} && \
+      useradd -r -u ${COWRIE_USER_ID} -d ${COWRIE_HOME} -m -g ${COWRIE_GROUP} -G root ${COWRIE_USER}; \
+    fi
+
+# Set up Debian prereqs
+RUN export DEBIAN_FRONTEND=noninteractive; \
+    apt-get -q update && \
+    apt-get -q install -y \
+        -o APT::Install-Suggests=false \
+        -o APT::Install-Recommends=false \
+      python3-pip \
+      ca-certificates \
+      libffi-dev \
+      libssl-dev \
+      python3-dev \
+      python3-venv \
+      python3 \
+      rustc \
+      cargo \
+      build-essential \
+      python3-virtualenv \
+      libsnappy-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+USER ${COWRIE_USER}
+WORKDIR ${COWRIE_HOME}
+
+# Copy requirements first to use Docker caching better
+RUN mkdir -p ${COWRIE_HOME}/cowrie-git
+COPY --chown=${COWRIE_USER}:${COWRIE_GROUP} ${COWRIE_SRC}/requirements.txt ${COWRIE_SRC}/requirements-output.txt ${COWRIE_HOME}/cowrie-git/
+COPY --chown=${COWRIE_USER}:${COWRIE_GROUP} ${COWRIE_SRC}/asgard1-requirements.txt ${COWRIE_HOME}/cowrie-git/
+
+RUN cd ${COWRIE_HOME} && \
+    python3 -m venv cowrie-env && \
+    . cowrie-env/bin/activate && \
+    pip install --no-cache-dir --upgrade pip wheel setuptools && \
+    pip install --no-cache-dir --upgrade cffi && \
+    pip install --no-cache-dir --upgrade -r ${COWRIE_HOME}/cowrie-git/requirements.txt && \
+    pip install --no-cache-dir --upgrade -r ${COWRIE_HOME}/cowrie-git/requirements-output.txt && \
+    pip install --no-cache-dir --upgrade -r ${COWRIE_HOME}/cowrie-git/asgard1-requirements.txt
+
+COPY --chown=${COWRIE_USER}:${COWRIE_GROUP} ${COWRIE_SRC} ${COWRIE_HOME}/cowrie-git
+
+FROM gcr.io/distroless/python3-debian12 AS runtime
+
+ENV COWRIE_GROUP=cowrie \
+    COWRIE_USER=cowrie \
+    COWRIE_HOME=/cowrie
+
+COPY --from=builder --chown=0:0 /etc/passwd /etc/passwd
+COPY --from=builder --chown=0:0 /etc/group /etc/group
+
+COPY --from=builder --chown=${COWRIE_USER}:${COWRIE_GROUP} ${COWRIE_HOME} ${COWRIE_HOME}
+
+RUN [ "python3", "-m", "compileall", "${COWRIE_HOME}", "/usr/lib/python3.11" ]
+
+VOLUME [ "/cowrie/cowrie-git/var", "/cowrie/cowrie-git/etc" ]
+
+USER ${COWRIE_USER}
+WORKDIR ${COWRIE_HOME}/cowrie-git
+
+ENV PATH=${COWRIE_HOME}/cowrie-env/bin:${PATH}
+ENV PYTHONPATH=${COWRIE_HOME}/cowrie-git/src
+ENV PYTHONUNBUFFERED=1
+ENV COWRIE_STDOUT=yes
+
+ENTRYPOINT [ "/cowrie/cowrie-env/bin/python3" ]
+CMD [ "/cowrie/cowrie-env/bin/twistd", "-n", "--umask=0022", "--pidfile=", "cowrie" ]
+
+EXPOSE 2222 2223

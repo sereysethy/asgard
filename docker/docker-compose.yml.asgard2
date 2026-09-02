@@ -1,0 +1,64 @@
+services:
+  redis:
+    image: redis
+    ports:
+      - "127.0.0.1:6379:6379"
+
+  asgard:
+    restart: always
+    image: ${IMAGE_ASGARD}
+    container_name: asgard
+    user: ${COWRIE_USER}
+    group_add: 
+      - ${DOCKER_GROUP_ID}
+    depends_on:
+      - target
+      - redis
+    ports:
+      - "2222:2222"
+      - "2223:2223"
+    volumes:
+      - ./data/cowrie-etc:/cowrie/cowrie-git/etc
+      - ./data/cowrie-var:/cowrie/cowrie-git/var
+      - ./data/config:/cowrie/cowrie-git/data/config
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  target:
+    image: ${TARGET_HONEYPOT_IMAGE}
+    hostname: ${TARGET_HONEYPOT_HOSTNAME}
+    container_name: ${TARGET_HOENYPOT_CONTAINER_NAME}
+
+  monitor_metric:
+    image: ${IMAGE_MONITOR}
+    user: ${COWRIE_USER}
+    group_add: 
+      - ${DOCKER_GROUP_ID}
+    depends_on:
+      - target
+      - redis
+    command: ['python', 'metric.py']
+    container_name: monitor_metric
+    volumes:
+      - ./data_monitor/config.ini:/monitor/monitor/config.ini
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data_monitor/log:/monitor/log
+
+  monitor_process:
+    image: ${IMAGE_MONITOR}
+    user: ${COWRIE_USER}
+    group_add: 
+      - ${DOCKER_GROUP_ID}
+    depends_on:
+      - target
+      - redis
+    command: ['python', 'process.py']
+    container_name: monitor_process
+    volumes:
+      - ./data_monitor:/monitor/monitor
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data_monitor/log:/monitor/log
+
+networks:
+  default:
+    external: true
+    name: ${DOCKER_NETWORK_NAME}

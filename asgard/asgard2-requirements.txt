@@ -1,0 +1,12 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+numpy==2.2.6
+scikit-learn==1.7.2
+docker==7.1.0
+redis==5.0.1
+requests==2.34.0
+gymnasium==1.2.1
+transformers==4.57.1
+tensorboard==2.20.0
+stable_baselines3==2.7.0
+bashlex==0.18
+torch==2.9.0

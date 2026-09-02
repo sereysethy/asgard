@@ -1,0 +1,204 @@
+[ssh]
+rsa_public_key = ${honeypot:state_path}/ssh_host_rsa_key.pub
+rsa_private_key = ${honeypot:state_path}/ssh_host_rsa_key
+ed25519_public_key = ${honeypot:state_path}/ssh_host_ed25519_key.pub
+ed25519_private_key = ${honeypot:state_path}/ssh_host_ed25519_key
+ecdsa_public_key = ${honeypot:state_path}/ssh_host_ecdsa_key.pub
+ecdsa_private_key = ${honeypot:state_path}/ssh_host_ecdsa_key
+
+# OpenSSH version, this should match the version of the SSH server
+# on the target server.
+version = SSH-2.0-OpenSSH_8.4p1 Debian-5+deb11u7
+
+## Public key authentication
+## 
+# Enable public key authentication
+auth_pubkey = true
+# If public key is allowed, specify where the keys are stored.
+# The public key verification is performed againt the public key
+# present in the authorized_keys file.
+# Possible values are: "file" or "container"
+# For `file`, local_home parameter has to be set. This is where
+# the public key should be stored by username in .ssh folder.
+# For `container`, public key will be checked against real authorized_keys files
+# present in .ssh folder under user home direction. 
+auth_pubkey_method = container
+# local_home = var/local_home
+
+# Enable SSH direct-tcpip forwarding
+# (default: true)
+forwarding = true
+
+# This enables redirecting forwarding requests to the real address
+# (default: false)
+forward_redirect = true
+
+[honeypot]
+
+# Sensor name is used to identify this Cowrie instance. Used by the database
+# logging modules such as mysql.
+#
+# If not specified, the logging modules will instead use the IP address of the
+# server as the sensor name.
+#
+# (default: not specified)
+sensor_name=asgardv2
+
+# Hostname for the honeypot.
+# This must match the container hostname of the target system
+hostname = cdnpixel
+
+# Allowed number of simultaneous connections, or -1 no limit
+max_connection = -1
+
+# tcp forward timeout in seconds
+tcp_forward_timeout = 20
+
+# ============================================================================
+# Proxy Options
+# ============================================================================
+[proxy]
+# type of backend:
+#   - simple_docker: use a single container
+#   - pool: cowrie-managed pool of virtual machines, configure below
+backend = simple_docker
+
+# =====================================
+# Simple Backend Configuration
+# =====================================
+backend_ssh_host = target
+backend_ssh_port = 22
+
+backend_telnet_host = localhost
+backend_telnet_port = 2023
+
+# real credentials to log into backend
+backend_user = nproc
+backend_pass = 
+backend_cwd = /home/nproc
+target_hostname = cdnpixel
+target_prompt = nproc@cdnpixel
+log_raw = false
+
+# set it to true to enable smart proxy
+smart_proxy = true
+
+[docker]
+ssh_image = debian-dev
+ssh_port = 22
+exposed_ssh_port = 2226
+file_path = var/log/containers/files
+session_path = var/log/containers/sessions
+logfile_path = var/log/containers
+debug = true
+unix_socket_path = unix://var/run/docker.sock
+network = default
+debug_ssh_host = 127.0.0.1
+debug_ssh_port = 2226
+container_name = cdnpixel
+tmp_folder = /var/lib/misc/tmp
+
+
+[monitor]
+debug = false
+ignored_commands = ---------
+#-bash,sshd:,bash
+
+[parser]
+debug = false
+
+[shell]
+debug = false
+
+[rl]
+### setting for RL
+model_dir = var/train_result
+sample_dir = var/samples
+model_filename = model
+# config_agent_filename = data/config/case1/lr01.json
+config_agent_filename = data/config/case3/roberta_clean_dqn_v1-0.json
+config_env_filename = data/config/case3/env_v1-0.json
+tensorboard_dir = var/tensorboard
+train_dir = var/train_data
+# true, false
+resume_training = true
+resume_file = var/train_result/saved/resume_file.CleanDQNLearner
+number_epoch = 100
+
+## environment name ##
+# Possible values are:
+# - Asgard: SimpleAttackerEnvV12
+# - Midgard: MidgardEnv
+# - OneHot: OneHotVectorEnvCase23
+# - Roberta: RobertaEnvV10
+environment = RobertaEnvWebV10
+
+# enable debug for the environment
+env_debug = true
+
+# this is needed fro the 'OneHotVectorEnvCase23'
+# performance threshold is a real number between [0, 1]
+performance_threshold = 0.5
+
+# 15GB
+BLK_READ_BYTE_MAX = 15e+9
+# 15GB
+BLK_WRITE_BYTE_MAX = 15e+9
+
+# 1GB
+NET_INBOUND_BYTE_MAX = 1e+9
+# 1GB
+NET_OUTBOUND_BYTE_MAX = 1e+9
+
+# risk level threshold is an integer number between [0, 4]
+# 0: lowest risk level, 4: highest risk level
+risk_level_threshold = 3
+
+# Shell that needs to be called to process/parsed commands
+# --------------------------------------------------------
+
+# > Environment: Asguard or Midgard using a Tabular method
+# shell_interactive_name = ShellComplexParsing
+# shell_exec_name = ShellComplexParsingForExec
+
+# > Environment: OneHotVectorEnvCase23
+# shell_interactive_name = ShellComplexOneHot
+# shell_exec_name = ShellComplexOneHotExec
+
+# > Environment: RobertaEnvV10
+shell_interactive_name = ShellRoberta
+shell_exec_name = ShellRobertaExec
+
+# Agent algorithm
+# ---------------
+# 1) If the envrionment is 'Asguard' or 'Midgard', the learning algorithm is
+#   'QLearner'.
+# 2) If the environment is 'OneHotVectorEnvCase23', algo: QLinearFALearner
+# 3) if the environment is 'RobertaEnvV10', algo: DQNLearner or CleanDQNLearner
+agent = CleanDQNLearner
+agent_debug = true
+# Agent Random State for reproductibility
+agent_random_state = 42
+# use for SGDRegressor to output information related to the model training
+# Norm: 0.10, NNZs: 4, Bias: 0.058824, T: 1, Avg. loss: 0.179133
+# 0: no verbose, 1: 
+agent_verbosity_level = 1
+
+# Enable cuda
+cuda = false
+
+[redis]
+# redis server serves as communication meduim between other programms such as 
+# the monitor
+host = redis
+port = 6379
+
+# the redis channel where the monitor publish the running processes
+channel_process_name = channel_process
+
+# the redis channel where the proxy shell publish the pid of the running process
+# that needs to be terminated.
+channel_process_kill = channel_terminate
+
+[proxy_shell]
+running_thread_looping_time = 5

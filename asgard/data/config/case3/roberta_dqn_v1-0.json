@@ -1,0 +1,18 @@
+{
+    "total_timesteps": 10000,
+    "learning_rate": 1e-4,
+    "buffer_size": 10000,
+    "gamma": 0.99,
+    "tau": 0.0004,
+    "target_network_frequency": 10,
+    "batch_size": 2,
+    "init_epsilon": 0.9,
+    "min_epsilon": 0.05,
+    "epsilon_decay": 0.99984,
+    "learning_starts": 2,
+    "train_frequency": 10,
+    "hidden_layer": 128,
+    "save_every": 5,
+    "log_every": 5,
+    "run": "DQNLearner"
+}

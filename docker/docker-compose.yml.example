@@ -1,0 +1,36 @@
+version: '3.5'
+
+volumes:
+  cowrie-etc:
+  cowrie-var:
+
+services:
+  cowrie:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        COWRIE_SRC: ${COWRIE_SRC}
+        COWRIE_USER_ID: ${COWRIE_USER_ID}
+        COWRIE_GROUP_ID: ${COWRIE_GROUP_ID}
+        DOCKER_GROUP_ID: ${DOCKER_GROUP_ID}
+    user: ${COWRIE_USER}
+    ports:
+      - "2222:2222"
+      #- "2223:2223"
+    volumes:
+      - ./data/cowrie-etc:/cowrie/cowrie-git/etc
+      - ./data/cowrie-var:/cowrie/cowrie-git/var
+      - /var/run/docker.sock:/var/run/docker.sock
+  
+  bastion:
+    image: ${TARGET_HONEYPOT_IMAGE}
+    hostname: cdnx01
+    container_name: cdnx01
+    volumes:
+      - ./data/local_home:/home
+
+networks:
+  default:
+    name: cowrie_default

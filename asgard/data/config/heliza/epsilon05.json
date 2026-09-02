@@ -1,0 +1,10 @@
+{
+    "init_epsilon": 0.5,
+    "min_epsilon": 0.1,
+    "epsilon_decay": 0.99,
+    "init_lr_rate": 0.05,
+    "min_lr": 0.05,
+    "learning_rate_decay": 0.0,
+    "discount": 1,
+    "run": "qlearning"
+}

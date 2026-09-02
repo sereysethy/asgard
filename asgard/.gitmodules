@@ -1,0 +1,3 @@
+[submodule "bashlex"]
+	path = bashlex
+	url = git@github.com:sereysethy/bashlex.git

@@ -1,0 +1,1 @@
+This SSH package serves as SSH client to connect to the target SSH server.

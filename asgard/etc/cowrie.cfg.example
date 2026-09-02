@@ -1,0 +1,159 @@
+[ssh]
+rsa_public_key = ${honeypot:state_path}/ssh_host_rsa_key.pub
+rsa_private_key = ${honeypot:state_path}/ssh_host_rsa_key
+ed25519_public_key = ${honeypot:state_path}/ssh_host_ed25519_key.pub
+ed25519_private_key = ${honeypot:state_path}/ssh_host_ed25519_key
+ecdsa_public_key = ${honeypot:state_path}/ssh_host_ecdsa_key.pub
+ecdsa_private_key = ${honeypot:state_path}/ssh_host_ecdsa_key
+
+version = SSH-2.0-OpenSSH_6.0p1 Debian-4+deb7u2
+local_home = var/local_home
+auth_pubkey = false
+
+[honeypot]
+
+# Sensor name is used to identify this Cowrie instance. Used by the database
+# logging modules such as mysql.
+#
+# If not specified, the logging modules will instead use the IP address of the
+# server as the sensor name.
+#
+# (default: not specified)
+#sensor_name=myhostname
+
+# Hostname for the honeypot. Displayed by the shell prompt of the virtual
+# environment
+#
+# (default: svr04)
+hostname = svr04
+backend = shell
+
+# ============================================================================
+# Proxy Options
+# ============================================================================
+[proxy]
+
+# type of backend:
+#   - simple: backend machine deployed by you (CAREFUL WITH SECURITY ASPECTS!!), specify hosts and ports below
+#   - pool: cowrie-managed pool of virtual machines, configure below
+backend = simple_docker
+
+# =====================================
+# Simple Backend Configuration
+# =====================================
+backend_ssh_host = localhost
+backend_ssh_port = 2226
+
+backend_telnet_host = localhost
+backend_telnet_port = 2023
+
+# real credentials to log into backend
+backend_user = nproc
+backend_pass =
+backend_cwd = /home/nproc
+target_hostname = honeypot
+target_prompt = nproc@honeypot
+log_raw = false
+
+# set it to true to enable smart proxy
+smart_proxy = true
+
+[docker]
+ssh_image = debian-dev
+ssh_port = 22
+exposed_ssh_port = 2226
+file_path = var/log/containers/files
+session_path = var/log/containers/sessions
+logfile_path = var/log/containers
+debug = true
+unix_socket_path = unix://var/run/docker.sock
+network = default
+debug_ssh_host = 127.0.0.1
+debug_ssh_port = 2226
+container_name = honeypot
+tmp_folder = /var/lib/misc/tmp
+
+[influxdb]
+url = http://138.48.246.3:8086/query
+db = prometheus
+
+[monitor]
+debug = true
+ignored_commands = /usr/sbin/sshd,-bash,sshd:,bash
+
+[parser]
+debug = false
+
+[shell]
+debug = false
+# not used for the old shell linear
+# container_state_interval = 1
+# container_processes_interval = 1
+
+[proxy_shell]
+# set the configuration of the proxy shell that will loops indefinitely to
+# acquire the state of the running process
+running_thread_looping_time = 5
+
+[rl]
+### setting for RL
+model_dir = var/train_result/models
+sample_dir = var/samples/
+model_filename = model
+config_filename = data/config/case1/lr01.json
+tensorboard_dir = var/log/train
+train_dir = var/train_data
+resume_training = true
+resume_file = var/train_result/models/saved/resume_file
+number_epoch = 100
+
+### environment name
+# Possible values are:
+# - Asguard: SimpleAttackerEnvV12
+# - Midgard: MidgardEnv
+# - OneHot: OneHotVectorEnvCase23
+
+environment = OneHotVectorEnvCase23
+
+# this is needed fro the 'OneHotVectorEnvCase23'
+performance_index_0 = 0.5
+
+# Shell that needs to be called to process/parsed commands
+# Environment: Asguard or Midgard using a Tabular method
+# shell_interactive_name = ShellComplexParsing
+# shell_exec_name = ShellComplexParsingForExec
+# Environment: OneHotVectorEnvCase23
+shell_interactive_name = ShellComplexOneHot
+shell_exec_name = ShellComplexOneHotExec
+
+# Agent algorithm
+# If the envrionment is 'Asguard' or 'Midgard', the learning algorithm is
+# 'QLearner'.
+# If the environemnt is 'OneHotVectorEnvCase23', algo: QLinearFALearner
+agent = QLinearFALearner
+
+# Agent algorithm
+# If the envrionment is 'Asguard' or 'Midgard', the learning algorithm is
+# 'QLearner'.
+# If the environemnt is 'OneHotVectorEnvCase23', algo: QLinearFALearner
+agent = QLinearFALearner
+
+# Agent Random State for reproductibility
+agent_random_state = 42
+# use for SGDRegressor to output information related to the model training
+# Norm: 0.10, NNZs: 4, Bias: 0.058824, T: 1, Avg. loss: 0.179133
+# 0: no verbose, 1:
+agent_verbosity_level = 1
+
+[redis]
+# redis server serves as communication meduim between other programms such as
+# the monitor
+host = localhost
+port = 6379
+
+# the redis channel where the monitor publish the running processes
+channel_process_name = channel_process
+
+# the redis channel where the proxy shell publish the pid of the running process
+# that needs to be terminated.
+channel_process_kill = channel_terminate

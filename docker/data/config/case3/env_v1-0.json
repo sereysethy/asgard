@@ -1,0 +1,9 @@
+{
+    "token_max_length": 256,
+    "pre_trained_model_checkpoint": "roberta-base",
+    "risk_model_path": "var/risk_model/20240107-160415_exponential/lr_2e-05_step_1/checkpoint_2.tar",
+    "input_size": 768,
+    "hidden_size": 768,
+    "output_size": 5,
+    "api": "http://web/cmds/risk"
+}

@@ -1,0 +1,5 @@
+cowrie.cfg
+.env
+octopus
+docker-compose.yml
+.DS_Store

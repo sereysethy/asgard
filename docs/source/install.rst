@@ -17,7 +17,7 @@ Folder structure of the project
 -------------------------------
 
 .. code-block:: text
-    
+
     asgard/
         ├── bin/
         ├── data/
@@ -64,8 +64,8 @@ There are four groups of dependency, for each, they can be installed using *pip*
 
 *   `requirements-output.txt`: To allow Cowrie to write logs to an external system.
 
-*   `octopus-requirements.txt`: These are modules that the project needs such as *numpy*,
-    *Gymnasium*, *PyTorch*, etc.
+*   `asgard1-requirements.txt` and `asgard2-requirements.txt`: These are modules that the project
+    needs such as *numpy*, *Gymnasium*, *PyTorch*, etc.
 
 Target system
 -------------
@@ -85,13 +85,17 @@ Running the server
 
 To deploy a pre-configured server, the first thing that needs to be done is to
 edit the configuration file in *etc* directory. There are two versions of Asgard,
-a simple Asgard1 and an advanced Asgard2.
+a simple *Asgard1* and an advanced *Asgard2*. These two versions have same code base,
+but they have different configuration files.
+The configuration file for *Asgard1* is `cowrie_asgard1-0.cfg` and for *Asgard2*
+is `cowrie_asgard2-0.cfg`.
+
 For more detail of each version, click on these two links.
 
 *   `Asgard1 <./asgard1.html>`_
 *   `Asgard2 <./asgard2.html>`_
 
-Assume that Asgard1 is used, in this case, copy the `cowrie_asgard1-0.cfg` to `cowrie.cfg`,
+Assume that *Asgard1* is used, in this case, copy the `cowrie_asgard1-0.cfg` to `cowrie.cfg`,
 and edit the following sections:
 
 *   *proxy*: Specify the backend type ``simple_docker``, and SSH server and its exposed port.
@@ -307,9 +311,9 @@ To start the Asgard2 server, run the following command:
 
 .. code-block:: console
 
-    $ bin/cowrie start    
+    $ bin/cowrie start
 
-After a server is started, it will run in the background. 
+After a server is started, it will run in the background.
 A pid file will be created to store the process ID.
 
 To stop the server, run the following command:

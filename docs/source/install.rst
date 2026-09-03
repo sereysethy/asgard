@@ -19,22 +19,24 @@ Folder structure of the project
 .. code-block:: text
 
     asgard/
-        ├── bin/
-        ├── data/
-        └── etc/
-        └── src/
-        └── var/
+    ├── bin/
+    ├── data/
+    ├── etc/
+    ├── src/
+    └── var/
     docker/
     docs/
 
-- ``asgard``: contain source codes for *Asgard* honeypot.
-    - bin: scripts to start and stop the *Asgard* system.
-    - data: contains command names and configurations for RL and its environemnts.
-    - etc: contains Cowrie's configuration default `cowrie.cfg.dist` files and a custom one `cowrie.cfg`
-      that has to be set for each version of the Asgard honeypot. `userdb.txt` has to be properly set,
-      it defines username and passwords allowed to log in to the honeypot.
-- ``docker``: contains files to build Docker images for Asgard system and run them as Docker containers.
-- ``docs``: contains reStructured documentations.
+- ``asgard``: contains source code for the *Asgard* honeypot.
+    - ``bin``: scripts to start and stop the *Asgard* system.
+    - ``data``: contains command names and configurations for RL and its environments.
+    - ``etc``: contains Cowrie's default configuration file ``cowrie.cfg.dist``, plus the
+      version-specific templates ``cowrie_asgard1-0.cfg`` and ``cowrie_asgard2-0.cfg``, one
+      of which should be copied to ``cowrie.cfg`` and customized for each deployment. ``userdb.txt``
+      also lives here and must be properly set, as it defines the usernames and passwords allowed
+      to log in to the honeypot.
+- ``docker``: contains files to build Docker images for the Asgard system and run them as Docker containers.
+- ``docs``: contains reStructuredText documentation.
 
 Dependencies
 ============
@@ -43,62 +45,65 @@ Python installation
 -------------------
 
 Python can be installed based on your system setting. It is recommended to use
-an virtual environment such as *miniconda* or *uv*.
+a virtual environment such as *miniconda* or *uv*.
 
-The projects requires a Python version **3.10**, however it should work with any
-other newer versions of Python.
+The project requires Python version **3.10**, however it should work with any
+newer version of Python.
 
-There are four groups of dependency, for each, they can be installed using *pip* as follows:
+There are five groups of dependencies, each of which can be installed using *pip* as follows:
 
 .. code-block:: shell
 
     $ pip install -r requirement-file.txt
 
-*   `requirements.txt`: As the project was built upon the `Cowrie project <hhttps://github.com/cowrie/cowrie>`_,
-    as such, we need to install some of its requirement.
-    One of the most important dependency is `Twisted <https://twisted.org/>`_ which is the
-    Python framework allowing writing event-based Python program and also offer
-    Twisted Conche SSH services.
+*   ``requirements.txt``: As the project was built upon the `Cowrie project <https://github.com/cowrie/cowrie>`_,
+    we need to install some of its requirements. One of the most important dependencies is
+    `Twisted <https://twisted.org/>`_, the Python framework that allows writing event-based
+    Python programs and also provides Twisted Conch SSH services.
 
-*   `requirements-dev.txt`: For development purpose.
+*   ``requirements-dev.txt``: For development purposes.
 
-*   `requirements-output.txt`: To allow Cowrie to write logs to an external system.
+*   ``requirements-output.txt``: To allow Cowrie to write logs to an external system.
 
-*   `asgard1-requirements.txt` and `asgard2-requirements.txt`: These are modules that the project
-    needs such as *numpy*, *Gymnasium*, *PyTorch*, etc.
+*   ``asgard1-requirements.txt`` and ``asgard2-requirements.txt``: Additional modules the project
+    needs, such as *numpy*, *Gymnasium*, and *PyTorch*.
 
 Target system
 -------------
 
-Asgard is a proxy-based system, it proxies all the commands to Linux server known
-as a target system. The easiest one is to use an SSH server deployed as a Docker container,
-(althought a normal Linux server should also work).
-This container has to be accessible from the Asgard proxy system. The proxy system
-can connect to this SSH server via two types of authentication: password and SSH key.
-There is a sub project that details how to build and run SSH server in a docker.
+Asgard is a proxy-based system; it proxies all commands to a Linux server known
+as the target system. The easiest option is to use an SSH server deployed as a Docker container,
+although a normal Linux server should also work. This container has to be accessible from the
+Asgard proxy system. The proxy system can connect to this SSH server via two types of
+authentication: password and SSH key. A sub-project details how to build and run an SSH server
+in Docker.
 
-From this point onward, we suppose that we have an SSH server running as a Docker container
-named *honeypot* and it exposes an internal (or external) port 2226.
+From this point onward, we assume that we have an SSH server running as a Docker container
+named *honeypot*, listening on port 22.
 
 Running the server
 ==================
 
 To deploy a pre-configured server, the first thing that needs to be done is to
-edit the configuration file in *etc* directory. There are two versions of Asgard,
-a simple *Asgard1* and an advanced *Asgard2*. These two versions have same code base,
-but they have different configuration files.
-The configuration file for *Asgard1* is `cowrie_asgard1-0.cfg` and for *Asgard2*
-is `cowrie_asgard2-0.cfg`.
+edit the configuration file in the ``etc`` directory. There are two versions of Asgard:
+a simple *Asgard1* and an advanced *Asgard2*. These two versions share the same code base,
+but they have different configuration files. The configuration file for *Asgard1* is
+``cowrie_asgard1-0.cfg`` and for *Asgard2* is ``cowrie_asgard2-0.cfg``.
 
-For more detail of each version, click on these two links.
+For more detail on each version, see the following links.
 
 *   `Asgard1 <./asgard1.html>`_
 *   `Asgard2 <./asgard2.html>`_
 
-Assume that *Asgard1* is used, in this case, copy the `cowrie_asgard1-0.cfg` to `cowrie.cfg`,
+Assuming *Asgard1* is used, copy ``cowrie_asgard1-0.cfg`` to ``cowrie.cfg``,
 and edit the following sections:
 
-*   *proxy*: Specify the backend type ``simple_docker``, and SSH server and its exposed port.
+*   ``proxy``: Specify the backend type ``simple_docker``, and the SSH server and its exposed port
+(eg. 2226).
+This only applys if the SSH server is deployed as a Docker container. If it is deployed as a normal Linux server,
+then specify its IP address and port.
+In case that it is deployed in the same network, then we can use the container name as the backend host,
+and the port that is exposed by the container. These information must be set in the `docker` section.
 
 .. code-block:: ini
 
@@ -111,12 +116,12 @@ and edit the following sections:
     backend_ssh_host = honeypot
     backend_ssh_port = 2226
 
-*   docker: how to connect to the backend system running as Docker container.
-    This is to create a username or modify an existing account, before the proxy actually
-    connects to the backend system. The creationg/modification of an account is done
-    by executing `docker exec container_name CMD` where `CMD` can be `useradd` or
-    `chpasswd`. In this example, the container name is `honeypot` and it also requires
-    a `unix_socket` to connect to the Docker engine.
+*   ``docker``: how to connect to the backend system running as a Docker container.
+    This creates a username or modifies an existing account before the proxy actually
+    connects to the backend system. The creation/modification of an account is done
+    by executing ``docker exec container_name CMD``, where ``CMD`` can be ``useradd`` or
+    ``chpasswd``. In this example, the container name is ``honeypot``, and it also requires
+    a ``unix_socket`` to connect to the Docker engine.
 
 .. code-block:: ini
 
@@ -124,12 +129,13 @@ and edit the following sections:
     debug = true
     unix_socket_path = unix://var/run/docker.sock
     container_name = honeypot
+    ssh_port = 22
 
-Configuration for *Asgard1*
------------------------------
+Configuration for Asgard1
+--------------------------
 
-To run a simple Asgard server aka `Asgard1 <./asgard1.html>`_, modify
-the following `rl` section:
+To run a simple Asgard server, aka `Asgard1 <./asgard1.html>`_, modify
+the following ``rl`` section:
 
 .. code-block:: ini
 
@@ -165,21 +171,21 @@ the following `rl` section:
     # ---------------
     agent = QLearner
 
-    # Agent Random State for reproductibility
+    # Agent Random State for reproducibility
     agent_random_state = 42
     # use for SGDRegressor to output information related to the model training
     # Norm: 0.10, NNZs: 4, Bias: 0.058824, T: 1, Avg. loss: 0.179133
-    # 0: no verbose, 1:
+    # 0: no verbose, 1: verbose
     agent_verbosity_level = 1
 
     # Enable cuda
     cuda = false
 
-Configuration for *Asgard2*
------------------------------
+Configuration for Asgard2
+--------------------------
 
-To run an advanced Asgard server aka `Asgard2 <./asgard2.html>`_, in addition to
-the section `rl`, some other sections are also needed:
+To run an advanced Asgard server, aka `Asgard2 <./asgard2.html>`_, in addition to
+the ``rl`` section, some other sections are also needed:
 
 .. code-block:: ini
 
@@ -194,7 +200,7 @@ the section `rl`, some other sections are also needed:
     debug = false
 
     [proxy_shell]
-    # set the configuration of the proxy shell that will loops indefinitely to
+    # set the configuration of the proxy shell that will loop indefinitely to
     # acquire the state of the running process
     running_thread_looping_time = 2
 
@@ -220,35 +226,34 @@ the section `rl`, some other sections are also needed:
     resume_training = false
 
     ## If resume_training is set to True, a resume_file is also needed.
-    ## It stores data needed to resume a training.
+    ## It stores data needed to resume training.
     resume_file = var/train_result/models/saved/snowwhite_asgard
 
-    ## Number of epoch to save training data such as model checkpoints.
+    ## Number of epochs between saving training data such as model checkpoints.
     number_epoch = 100
 
     ## environment name ##
-    # RobertaEnvV10: It uses DQN algorithm and also includes the
+    # RobertaEnvV10: Uses the DQN algorithm and also includes the
     # risk assessment model to encode the command line.
-    # RobertaEnvWebV10: It uses DQN algorithm but the risk assessment
-    # model is a web service. This is more recommended as it makes
-    # the deployment easier to manage.
+    # RobertaEnvWebV10: Uses the DQN algorithm, but the risk assessment
+    # model runs as a web service. This is the recommended setting, as it
+    # makes deployment easier to manage.
     environment = RobertaEnvV10
 
-
-    ## Comment this out, if the environment is set to `RobertaEnvWebV10`
+    ## Comment this out if the environment is set to `RobertaEnvWebV10`
     [command_encoder]
     model_path = data/word2vec/20220125-155606/cmd2vec_model_v7_all_20220125-155606_10_90_8.model
 
     ## State of compromise (SoC).
-    # This values indicates when the agent should consider
+    # This value indicates when the agent should consider
     # that it is deeply compromised. Its value is a real number between [0, 1].
-    # For instance, if it is set to 0.5, this means that if its resouce consumption
-    # is more than 50%, then the agent considers the system is deeply compromised.
-    # In case that we want to capture more advanced attack, this value should be set closed to 1.
+    # For instance, if it is set to 0.5, this means that if its resource consumption
+    # is more than 50%, then the agent considers the system deeply compromised.
+    # To capture more advanced attacks, this value should be set closer to 1.
     performance_threshold = 0.5
 
     ## This is how the SoC is calculated. It uses different
-    # resource metric to evalaute its SoC.
+    # resource metrics to evaluate its SoC.
     # Metric 1: Average CPU consumption
     # Metric 2: Average RAM consumption
     # Metric 3: Block disk read in bytes
@@ -258,7 +263,7 @@ the section `rl`, some other sections are also needed:
 
     # As metrics 3-6 are cumulative and lack natural maximums,
     # we need to define artificial upper limits to express current
-    # usage as percentage. These upper value should also reflect
+    # usage as a percentage. These upper values should also reflect
     # the extent to which the honeypot is allowed to be compromised.
 
     # 15GB
@@ -271,7 +276,7 @@ the section `rl`, some other sections are also needed:
     # 1GB
     NET_OUTBOUND_BYTE_MAX = 1e+9
 
-    # Command risk level threshold is an integer number between [0, 4]
+    # Command risk level threshold is an integer between [0, 4]
     # 0: lowest risk level, 4: highest risk level
     risk_level_threshold = 3
 
@@ -292,28 +297,35 @@ the section `rl`, some other sections are also needed:
 .. code-block:: ini
 
     [redis]
-    # redis server serves as communication meduim between other programms such as
+    # redis server serves as the communication medium between other programs such as
     # the monitor
     host = localhost
     port = 6379
 
-    # the redis channel where the monitor publish the running processes
+    # the redis channel where the monitor publishes running processes
     channel_process_name = channel_process
 
-    # the redis channel where the proxy shell publish the pid of the running process
-    # that needs to be terminated.
+    # the redis channel where the proxy shell publishes the pid of the running process
+    # that needs to be terminated
     channel_process_kill = channel_terminate
 
 Running and stopping the server
--------------------------------
+--------------------------------
 
-To start the Asgard2 server, run the following command:
+The same commands are used to start and stop the server for both *Asgard1* and *Asgard2*,
+once the appropriate configuration file has been copied to ``cowrie.cfg``.
+*Asgard2* requires additional components to be running, such as the monitor and
+risk assessment components. These components can be run as Docker containers
+or as normal Linux servers.
+For more details, see the `deployment_v2 <./deployment_v2.html>`_ section.
+
+To start the server, run the following command:
 
 .. code-block:: console
 
     $ bin/cowrie start
 
-After a server is started, it will run in the background.
+After the server is started, it will run in the background.
 A pid file will be created to store the process ID.
 
 To stop the server, run the following command:

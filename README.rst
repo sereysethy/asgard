@@ -12,19 +12,19 @@ Asgard is an abstract model which can be instantiated to build different
 kinds of adaptive, self-guarded honeypots.
 It differs from traditional honeypots and other smart honeypots mainly
 in how honeypot security risk is managed: a honeypot is considered
-an asset rather than just a security tool that has to be protected.
+an asset rather than just a security tool, and as a result, it must be protected.
 
 In other words, it learns to balance two contradictory objectives for a honeypot:
 (1) attack data collection and (2) security of the honeypot.
 
 To achieve the first objective, the honeypot has to be probed,
 attacked, and compromised. However, once it is fully compromised,
-that is when the second objective comes into play:
+the second objective comes into play:
 the honeypot can minimize the security risk to the network
 where it is deployed by limiting any outgoing attacks.
 All of this is intelligently managed thanks to its decision module,
-which uses a learning algorithm, specifically RL algorithms, and
-a rich environment state.
+which uses learning algorithms, specifically reinforcement 
+learning algorithms, and a rich environment state.
 
 The abstract model is the outcome of the PhD research work of Sereysethy Touch.
 

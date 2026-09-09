@@ -54,6 +54,6 @@ Citations
 
 *   [1] Touch, S., & Colin, J. N. (2021, October). 
     Asguard: Adaptive Self-guarded Honeypot. In *WEBIST* (pp. 565-574).
-*   [2] Touch, S., & Colin, J. N. (2022). 
+*   [2] Touch, S., & Colin, J. N. (2022). `https://doi.org/10.3390/app12105224 <https://doi.org/10.3390/app12105224>`_
     A comparison of an adaptive self-guarded honeypot with conventional honeypots. 
-    *Applied Sciences*, *12* (10), 5224.
+    *Applied Sciences*, *12* (10), 5224. `https://doi.org/10.5220/0010719100003058 <https://doi.org/10.5220/0010719100003058>`_

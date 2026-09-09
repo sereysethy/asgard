@@ -36,9 +36,9 @@ To learn more about the Asgard model, please refer to the following papers:
     Lecture Notes in Computer Science, vol 16232. Springer, Cham. `https://doi.org/10.1007/978-3-032-16092-8_11 <https://doi.org/10.1007/978-3-032-16092-8_11>`_
 *   Touch, S., & Colin, J. N. (2022).
     A comparison of an adaptive self-guarded honeypot with conventional honeypots.
-    *Applied Sciences*, *12* (10), 5224.
+    *Applied Sciences*, *12* (10), 5224. `https://doi.org/10.3390/app12105224 <https://doi.org/10.3390/app12105224>`_
 *   Touch, S., & Colin, J. N. (2021, October).
-    Asguard: Adaptive Self-guarded Honeypot. In *WEBIST* (pp. 565-574).
+    Asguard: Adaptive Self-guarded Honeypot. In *WEBIST* (pp. 565-574). `https://doi.org/10.5220/0010719100003058 <https://doi.org/10.5220/0010719100003058>`_
 
 Documentation
 *************

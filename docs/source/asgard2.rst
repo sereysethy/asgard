@@ -15,7 +15,7 @@ The decision engine is the core of the adaptive honeypot.
 Like *Asgard1.0* and other adaptive systems, it employs a DRL algorithm 
 to learn appropriate responses to attacker requests. 
 In the following, we describe each component of *Asgard2.0*'s MDP and 
-the Deep Q-Network (DQN) algorithm used to train the model.
+the Deep Q-Network (DQN) [1] algorithm used to train the model.
 
 Environment
 ^^^^^^^^^^^
@@ -245,3 +245,6 @@ Citations
     An adaptive self-guarded and risk-aware honeypot using DRL. 
     In: *Laborde, R., et al. Computer Security. ESORICS 2025 International Workshops. ESORICS 2025.* 
     Lecture Notes in Computer Science, vol 16232. Springer, Cham. `https://doi.org/10.1007/978-3-032-16092-8_11 <https://doi.org/10.1007/978-3-032-16092-8_11>`_
+
+[3] Volodymyr Mnih et al. (2015). Human-level control through deep reinforcement learning. 
+    *Nature*, 518(7540), 529–533. `https://doi.org/10.1038/nature14236 <https://doi.org/10.1038/nature14236>`_

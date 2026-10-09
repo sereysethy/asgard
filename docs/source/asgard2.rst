@@ -25,7 +25,7 @@ the environment. *Asgard1.0* and other earlier systems only
 used the command name, limiting the agent to pre-execution decisions. 
 However, post-execution effects -- like reconfiguration, cryptomining, 
 or botnet installation -- can deeply impact the system. 
-*Asgard1.0* gives the agent greater control and allows for 
+*Asgard2.0* gives the agent greater control and allows for 
 continuous background monitoring to minimize long-term damage. 
 We consider a deeply compromised honeypot no longer useful and 
 recommend its termination, though this depends on how 
@@ -84,8 +84,8 @@ For short-running commands, we define a set
     
 which are exactly the same as those defined for `Asgard1.0 <./asgard1.html>`_.
 For long-running commands, we define a new set 
-:math:`\mathcal{A}_{long} = \left\{terminate, nop\right\}` where $terminate$ is 
-to terminate a long-running command, and $nop$ (no operation) is to allow 
+:math:`\mathcal{A}_{long} = \left\{terminate, nop\right\}` where :math:`terminate` is 
+to terminate a long-running command, and :math:`nop` (no operation) is to allow 
 a long-running command to continue to execute.
 
 
@@ -141,7 +141,7 @@ on three factors: state, :math:`SoC` and action. Our general idea to reward the 
 as follows: if the system is not deeply compromised and the agent chooses 
 to allow all types of commands to execute, the agent is positively rewarded. 
 However if the system is deeply compromised, only the short-running command with 
-a risk level below a defined global risk level noted $risk_g$ should be allowed 
+a risk level below a defined global risk level noted :math:`risk_g` should be allowed 
 to execute. In any other cases, the agent is negatively punished.
 
 Commonly, a reward in RL problem is given either -1, 0 or 1, 
@@ -150,7 +150,7 @@ the level of :math:`SoC`, if the command class name is not known especially when
 the command is composed of other commands (e.g., a pipeline command).
 Consequently, we propose the following reward formula which 
 is normalized between 0 and 1, for the observed metric :math:`m_i = (p_i, c_i, t_i)` 
-is :math:`rp_i = 1 - \frac{c_i}{t_{i}}` where $c_i$ is also normalized.
+is :math:`rp_i = 1 - \frac{c_i}{t_{i}}` where :math:`c_i` is also normalized.
 
 Assume that we fix :math:`t_{g}` to 0.5, this means that once the target system consumes 
 more than 50% of its resource by any metric, its reward becomes negative. 
@@ -165,7 +165,7 @@ to which the honeypot is allowed to be compromised.
 Before we define our final reward functions, we propose two intermediate functions 
 namely :math:`r_{class}` which is based on *class of command* 
 (eq. :eq:`asgard2.0:eq:rewardbyname`) and 
-$r_{risk}$ (eq. :eq:`asgard2.0:eq:rewardbyrisk`) which is based 
+:math:`r_{risk}` (eq. :eq:`asgard2.0:eq:rewardbyrisk`) which is based 
 on risk level of the command. 
 
 .. math::
@@ -209,8 +209,8 @@ Long-running command (eq. :eq:`asgard2.0:eq:reward_long`):
     r_{short}(s_t, a_t) =
     \scriptsize
     \begin{cases}
-        max\left(r_{name}, r_{risk}\right) & \text{if } r_{name}(s_t, a_t) > 0\ \text{or} \ r_{risk}(s_t, a_t) > 0  \\
-        min\left(r_{name}, r_{risk}\right) & \text{otherwise}
+        max\left(r_{class}, r_{risk}\right) & \text{if } r_{class}(s_t, a_t) > 0\ \text{or} \ r_{risk}(s_t, a_t) > 0  \\
+        min\left(r_{class}, r_{risk}\right) & \text{otherwise}
     \end{cases}
     \end{equation}
 

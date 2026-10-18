@@ -34,6 +34,9 @@ To learn more about the Asgard model, please refer to the following papers:
     An adaptive self-guarded and risk-aware honeypot using DRL.
     In: *Laborde, R., et al. Computer Security. ESORICS 2025 International Workshops. ESORICS 2025.*
     Lecture Notes in Computer Science, vol 16232. Springer, Cham. `https://doi.org/10.1007/978-3-032-16092-8_11 <https://doi.org/10.1007/978-3-032-16092-8_11>`_
+*   Touch, S., Fink, J., Colin, JN. (2025). Automated Risk Assessment of Shell-Based Attacks Using a LLM. 
+    In: *Collart-Dutilleul, S., Ouchani, S., Cuppens, N., Cuppens, F. (eds) Risks and Security of Internet and Systems. CRiSIS 2024*. 
+    Lecture Notes in Computer Science, vol 15456. Springer, Cham. https://doi.org/10.1007/978-3-031-89350-6_11
 *   Touch, S., & Colin, J. N. (2022).
     A comparison of an adaptive self-guarded honeypot with conventional honeypots.
     *Applied Sciences*, *12* (10), 5224. `https://doi.org/10.3390/app12105224 <https://doi.org/10.3390/app12105224>`_

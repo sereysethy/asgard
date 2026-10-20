@@ -99,11 +99,11 @@ Assuming *Asgard1* is used, copy ``cowrie_asgard1-0.cfg`` to ``cowrie.cfg``,
 and edit the following sections:
 
 *   ``proxy``: Specify the backend type ``simple_docker``, and the SSH server and its exposed port
-(eg. 2226).
-This only applys if the SSH server is deployed as a Docker container. If it is deployed as a normal Linux server,
-then specify its IP address and port.
-In case that it is deployed in the same network, then we can use the container name as the backend host,
-and the port that is exposed by the container. These information must be set in the `docker` section.
+    (eg. 2226).
+    This only applys if the SSH server is deployed as a Docker container. If it is deployed as a normal Linux server,
+    then specify its IP address and port.
+    In case that it is deployed in the same network, then we can use the container name as the backend host,
+    and the port that is exposed by the container. These information must be set in the `docker` section.
 
 .. code-block:: ini
 

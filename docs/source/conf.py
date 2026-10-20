@@ -33,6 +33,8 @@ autodoc_default_options = {
     "special-members": True,
 }
 
+autodoc_mock_imports = ["transformers", "sklearn", "scipy", "torch", "numpy"]
+
 templates_path = ['_templates']
 exclude_patterns = []
 
